@@ -11,6 +11,8 @@ external format_float : string -> float -> string = "caml_format_float"
 
 external length : string -> int = "%string_length"
 
+external get : string -> int -> char = "%string_safe_get"
+
 let of_int n =
     format_int "%d" n
 
@@ -31,6 +33,8 @@ let ( + ) s1 s2 =
 
     bytes_unsafe_to_string s
 
+let concat : string list -> string =
+    List.foldl (fun s m -> s + m) ""
 
 external string_get : string -> int -> char = "%string_safe_get"
 let valid_float_lexem s =
@@ -43,7 +47,6 @@ let valid_float_lexem s =
     in
     
     loop 0
-
 
 let of_float f =
     valid_float_lexem (format_float "%.12g" f)

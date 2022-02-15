@@ -68,7 +68,7 @@ let bet_odds (bet : bet) (state : state) : float =
             binomial_probability_greater_equal other_dice_qty (bet.quantity - known_quantity) Float.(1.0 / 3.0)
 
 let related_odds (bet : bet) (state : state) =
-    Terminal.print "Related Odds of Successful Bet:\n";
+    Console.print "Related Odds of Successful Bet:\n";
 
     match bet.face with
     | 1 ->
@@ -82,7 +82,7 @@ let related_odds (bet : bet) (state : state) =
                 } in
             let odds = bet_odds current_bet state in
 
-            Terminal.printf "%d, %ds: %f\n" current_bet.quantity current_bet.face odds;
+            Console.print_all [String.of_int current_bet.quantity; ", "; String.of_int current_bet.face; "s: "; String.of_float odds; "\n"];
         done;
 
         for current_quantity = bet.quantity * 2 to bet.quantity * 2 + 1 do
@@ -95,7 +95,7 @@ let related_odds (bet : bet) (state : state) =
 
                 let odds = bet_odds current_bet state in
 
-                Terminal.printf "%d, %ds: %f\n" current_bet.quantity current_bet.face odds;
+                Console.print_all [String.of_int current_bet.quantity; ", "; String.of_int current_bet.face; "s: "; String.of_float odds; "\n"];
             done;
         done;
 
@@ -109,7 +109,7 @@ let related_odds (bet : bet) (state : state) =
 
             let odds = bet_odds current_bet state in
 
-            Terminal.printf "%d, %ds: %f\n" current_bet.quantity current_bet.face odds;
+            Console.print_all [String.of_int current_bet.quantity; ", "; String.of_int current_bet.face; "s: "; String.of_float odds; "\n"];
         done;
 
         for current_face = 2 to 6 do
@@ -121,7 +121,7 @@ let related_odds (bet : bet) (state : state) =
             
             let odds = bet_odds current_bet state in
 
-            Terminal.printf "%d, %ds: %f\n" current_bet.quantity current_bet.face odds;
+            Console.print_all [String.of_int current_bet.quantity; ", "; String.of_int current_bet.face; "s: "; String.of_float odds; "\n"];
         done;
 
         let ones_bet =
@@ -130,6 +130,6 @@ let related_odds (bet : bet) (state : state) =
                 face = 1;
             } in
 
-        Terminal.printf "%d, %ds: %f\n" ones_bet.quantity ones_bet.face (bet_odds ones_bet state);
+        Console.print_all [String.of_int ones_bet.quantity; ", "; String.of_int ones_bet.face; "s: "; String.of_float (bet_odds ones_bet state); "\n"];
 
 

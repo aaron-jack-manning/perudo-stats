@@ -152,5 +152,22 @@ let rec initialize_helper (f : int -> 'a) (length : int) (index : int) (acc : 'a
 let initialize (f : int -> 'a) (length : int) : 'a list =
     initialize_helper f length 0 []
 
-let of_array =
-    Stdlib.Array.to_list
+
+
+
+
+external unsafe_get: 'a array -> int -> 'a = "%array_unsafe_get"
+external array_length : 'a array -> int = "%array_length"
+
+let rec of_array_helper arr i res =
+    let open Int in
+    if i < 0 then
+        res
+    else
+        of_array_helper arr (i - 1) (unsafe_get arr i :: res)
+    
+
+let of_array arr =
+    let open Int in
+    of_array_helper arr (array_length arr - 1) []
+    

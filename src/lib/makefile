@@ -1,11 +1,19 @@
-STANDARD_FLAGS = -O3
-STANDARD_COMPILE = ocamlopt $(STANDARD_FLAGS) -nopervasives -c
+COMPILER = ocamlopt
+EXT = .cmx
+AEXT = .cmxa
+
+STANDARD_FLAGS = -nopervasives -O3
+STANDARD_COMPILE = $(COMPILER) $(STANDARD_FLAGS) -c
+STANDARD_COMPILE_WITH_C = $(COMPILER) -ccopt -fPIC -c
 LIB_NAME = library
+
+COMPILED_FILES = general$(EXT) fatal$(EXT) int$(EXT) float$(EXT) option$(EXT) stack$(EXT) list$(EXT) map$(EXT) queue$(EXT) set$(EXT) tree$(EXT) string$(EXT) char$(EXT) bool$(EXT) console$(EXT) file$(EXT)
+C_LIBS_FOR_LINKING = -cclib -lconsole_external -cclib -lfile_external
 
 build:
 	make clean
 
-	ocamlopt $(STANDARD_FLAGS) -nopervasives -c general.mli general.ml
+	$(COMPILER) $(STANDARD_FLAGS) -c general.mli general.ml
 
 	$(STANDARD_COMPILE) fatal.mli fatal.ml
 	$(STANDARD_COMPILE) int.mli int.ml
@@ -20,12 +28,14 @@ build:
 	$(STANDARD_COMPILE) string.mli string.ml
 	$(STANDARD_COMPILE) char.mli char.ml
 	$(STANDARD_COMPILE) bool.mli bool.ml
-	$(STANDARD_COMPILE) terminal.mli terminal.ml
-	$(STANDARD_COMPILE) file.mli file.ml
-	$(STANDARD_COMPILE) array.mli array.ml
-	$(STANDARD_COMPILE) random.mli random.ml
+	$(STANDARD_COMPILE_WITH_C) console_external.c console.mli console.ml
+	ocamlmklib console_external.o -o console_external
+	$(STANDARD_COMPILE_WITH_C) file_external.c file.mli file.ml
+	ocamlmklib file_external.o -o file_external
 
-	ocamlopt -a general.cmx fatal.cmx int.cmx float.cmx option.cmx stack.cmx list.cmx map.cmx queue.cmx set.cmx tree.cmx string.cmx char.cmx bool.cmx terminal.cmx file.cmx array.cmx random.cmx -o $(LIB_NAME).cmxa
+	$(STANDARD_COMPILE) array.mli array.ml
+
+	$(COMPILER) -a $(C_LIBS_FOR_LINKING) $(COMPILED_FILES) -o library.cmxa
 
 clean:
-	rm -f *.o *.a *.s *.cmi *.cmx *.cmxa *.cmo *.cma
+	rm -f *.o *.a *.s *.so *.cmi *.cmx *.cmxa *.cmo *.cma

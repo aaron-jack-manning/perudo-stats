@@ -1,27 +1,73 @@
 open General
 
+external unsafe_get: 'a array -> int -> 'a = "%array_unsafe_get"
+external unsafe_set: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
+external create: int -> 'a -> 'a array = "caml_make_vect"
 
-let of_list = Stdlib.Array.of_list
 
-let length = Stdlib.Array.length
 
-let concat = Stdlib.Array.concat
 
-let append = Stdlib.Array.append
 
-let get = Stdlib.Array.get
 
-let set = Stdlib.Array.set
+external length : 'a array -> int = "%array_length"
 
-let map = Stdlib.Array.map
+external get : 'a array -> int -> 'a = "%array_safe_get"
 
-let create = Stdlib.Array.init
+external set : 'a array -> int -> 'a -> unit = "%array_safe_set"
 
-let heap_sort = Stdlib.Array.sort
+let of_list = function
+    | [] -> [||]
+    | x :: xs as l ->
+        let a = create (List.length l) x in
+        let rec fill i = function
+            | [] ->
+                a
+            | x::xs ->
+                unsafe_set a i x;
+                fill Int.(i + 1) xs
+        in
+        fill 1 xs
 
-let merge_sort = Stdlib.Array.stable_sort
+let create (length : int) (f : int -> 'a) : 'a array =
+    if length = 0 then
+        [||]
+    else if length < 0 then
+        Fatal.failwith "Cannot create an array with a size less than 0."
+    else
+    let result = create length (f 0) in
+    for i = 1 to Int.(length - 1) do
+        unsafe_set result i (f i)
+    done;
+    result
 
-let copy = Stdlib.Array.copy
+let append (arr1 : 'a array) (arr2 : 'b array) =
+    let open Int in
+    let arr1_length = length arr1 in
+    let arr2_length = length arr2 in
+
+    let init i =
+        if i < arr1_length then
+            get arr1 i
+        else
+            (get arr2 (i - arr1_length))
+    in
+        
+    create (arr1_length + arr2_length) init
+
+let concat (arrays : 'a array list) : 'a array =
+    arrays |> List.foldl append [||]
+
+let map_mutate (f : 'a -> 'a) (arr : 'a array) : unit =
+    let open Int in
+    for i = 0 to length arr - 1 do
+        set arr i ((get arr i) |> f);
+    done;;
+
+let copy (arr : 'a array) =
+    create (length arr) (fun i -> get arr i)
+
+let map (f : 'a -> 'b) (arr : 'a array) : 'b array =
+    create (length arr) (fun i -> (get arr i) |> f)
 
 let linear_search (arr : 'a array) (value : 'a) =
     let i = ref 0 in

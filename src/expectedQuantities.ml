@@ -75,6 +75,5 @@ let expected_frequencies_adjusted_for_ones (freq : expected_frequencies) : expec
     }
 
 let betting_expectation x =
-    Terminal.print "Expected number of each face around the table (adjusted for ones being wild):\n";
-    (calculate_expected_values >> expected_frequencies_adjusted_for_ones >> stringify_expected_frequencies >> Terminal.print) x
-
+    Console.print "Expected number of each face around the table (adjusted for ones being wild):\n";
+    (calculate_expected_values >> expected_frequencies_adjusted_for_ones >> stringify_expected_frequencies >> Console.print) x

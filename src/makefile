@@ -7,7 +7,7 @@ build:
 	$(COMPILE) expectedQuantities.ml
 	$(COMPILE) main.ml
 
-	ocamlopt $(CUSTOM_LIBRARY_LOCATION)/library.cmxa types.cmx odds.cmx expectedQuantities.cmx main.cmx -o program
+	ocamlopt -I $(CUSTOM_LIBRARY_LOCATION) $(CUSTOM_LIBRARY_LOCATION)/library.cmxa types.cmx odds.cmx expectedQuantities.cmx main.cmx -o program
 
 mostlyclean:
 	rm -f *.o *.a *.s *.cmi *.cmx *.cmxa *.cmo *.cma
